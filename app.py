@@ -1,54 +1,43 @@
-"""
-Delbot
-
-Copyright (C) 2017  Shail Deliwala
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
-
 from resources.query_service import QueryService
 from flask_restful import Api, Resource, reqparse
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template
+import pandas as pd
+import requests
+from flask import request
 
 
 app = Flask(__name__)
-api = Api(app)
-api.add_resource(QueryService, '/news_urls')
+# api = Api(app)
+# api.add_resource(QueryService, '/news_urls')
 
 
-@app.route("/")
-@app.route("/index")
+@app.route("/", methods=['GET','POST'])
 def index():
-    return render_template("index.html")
+    if request.method == "GET":
+        return render_template("index1.html")
 
+    else:
+        data = pd.read_csv (r'testing/db_dell.csv', delimiter=",")
+        user_ID = int(request.form['data'])
+        print(type(user_ID))
+        print(user_ID)
 
-@app.route("/favicon.ico")
-def favicon():
-    from os import path
-    return send_from_directory(path.join(app.root_path, "static"), "favicon.ico", mimetype = "image/vnd.microsoft.icon")
+        arr=["Emp ID","Emp_name"]
 
+        # input_string = input("Enter array separated by commas: ")   #must include emp_ID
+        # arr  = input_string.split(",")
 
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-    return response
+        df = pd.DataFrame(data, columns = arr)
+        df.set_index("Emp ID", inplace = True)
+        result = df.loc[user_ID]
+        print(result)
+        print("\n")
+
+        return render_template("index1.html")
 
 
 if __name__ == '__main__':
     try:
         app.run('localhost', port = 5000, debug = True, use_reloader = False)
-    except Exception, e:
-        print e
+    except Exception as e:
+        print (e)

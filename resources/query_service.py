@@ -54,7 +54,7 @@ class QueryAnalyzer(object):
             if not done:
                 ret_val["phrase"] = "Sorry, no valid results were returned."
             return ret_val, done
-        except Exception, e:
+        except Exception as e:
             return {"phrase": "Sorry, something unexpected happened.", "original_exception": e.message}, False
 
 

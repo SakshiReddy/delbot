@@ -92,5 +92,5 @@ def get_gkg(query):
         for x in _findall("\(.*\)", s):
             s = s.replace(x, "")
         return s
-    except _wk.DisambiguationError, e:
+    except _wk.DisambiguationError as e:
         return False

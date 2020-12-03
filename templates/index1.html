@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Complete Bootstrap 4 Website Layout</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+	<link href="static/style.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://m.w3newbie.com/you-tube.css">
+	<script>var synth = window.speechSynthesis;</script>
+    <style>
+        .speech {
+            border: 0px solid rgb(232, 238, 241);
+            text-align: center;
+            padding: 0;
+			margin: 0;
+			background-color:beige;
+			font-family: "Arial";
+			font-size: small;
+        }
+
+            .speech input {
+                border: 1;
+                width: 240px;
+                display:inline-flex;
+				height: 30px;
+
+            }
+
+            .speech img {
+                float: right;
+                width: 40px;
+            }
+    </style>
+</head>
+<body >
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-md navbar-light bg-dark sticky-top">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="#"><img src="img/d2.png"></a>
+
+		<div class="collapse navbar-collapse" id="navbarResponsive" >
+			<ul class="navbar-nav ml-auto smooth-scroll" >
+				<li class="nav-item active">
+					<a class="nav-link" href="#" style="color: aliceblue;">Home</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#" style="color: aliceblue;" >Progress</a>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<!--- Image Slider -->
+
+
+<!--- Jumbotron -->
+<!--<div class="container-fluid">
+	<div class="row Jumbotron">
+		<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-10">
+			<p class="lead">
+				<h3 class= "speech">Say the query in any of the following formats: <h3>
+					<ul>
+					<li>what is the order status of xxxx (order number)</li>
+					<li>employee details </li>
+					<li>additional info</li>
+					</ul>
+			</p>
+		</div>
+	</div>
+</div>
+-->
+<div class="speech">
+	<h3>
+		 <a  href="#btn_query" style="font-size: small;">Query</a>
+	</h3>
+
+   <h3 class= "speech">Say the query in any of the following formats: <h3>
+	<ul class="speech">
+	<li class="speech">what is the order status of xxxx (order number)</li>
+	<li class="speech">employee details </li>
+	<li class="speech">additional info</li>
+	</ul>
+	<textarea style="width: 600px;font-family: Calibri;font-size:large" name="q" id="transcript"
+			  placeholder="Your query will appear here after you speak." rows="2" readonly="True"></textarea>
+	<br>
+	<input id="btn_query" type="button" onclick="startDictation()" value="Query"
+		   style="font-family: Calibri; font-size: large;" />
+	<img src="static/loader.gif" width="100px" align="left" style="float: left" hidden="True" id="loader" />
+	<br><br>
+
+	<h2 class="speech">Results</h2>
+	<textarea style="width: 600px;font-family: Calibri;font-size:large" id="output" rows="2" placeholder="Results will appear here."
+			  readonly="True"></textarea>
+			  <br>
+	<input id="btn_speak" type="button" value="Speak" onclick="btnClick()" style="font-family: Calibri;" />
+
+</div>
+<!--- Welcome Section -->
+<div class="container-fluid padding">
+	<div class="row welcome text-center">
+		<div class="col-12">
+			<h1 class="display-4">Employee Details</h1>
+			<p class="lead">
+				fill in employ details
+			</p>
+		</div>
+		<hr>
+
+	</div>
+</div>
+
+<!--- Three Column Section -->
+
+
+<!--- Two Column Section -->
+
+
+<!--- Fixed background -->
+
+
+<!--- Emoji Section -->
+
+
+<!--- Meet the team -->
+
+
+<!--- Cards -->
+
+
+<!--- Two Column Section -->
+
+
+<!--- Connect -->
+
+
+<!--- Footer -->
+
+<script>
+	function startDictation() {
+		document.getElementById('transcript').value = '';
+		document.getElementById('output').value = '';
+		if (window.hasOwnProperty('webkitSpeechRecognition')) {
+			var recognition = new webkitSpeechRecognition();
+			recognition.continuous = false;
+			recognition.interimResults = false;
+			recognition.lang = "en-US";
+			recognition.start();
+			recognition.onresult = function (e) {
+				document.getElementById('loader').hidden = false;
+				document.getElementById('transcript').value = e.results[0][0].transcript;
+				recognition.stop();
+				var data = e.results[0][0].transcript;
+				 $.post("http://localhost:5000/", { "data": data },
+				function (response) {
+				document.getElementById('loader').hidden = true;
+					data = response;
+					document.getElementById("output").value = data["urls"];
+				}).error(function (response) {
+				document.getElementById('loader').hidden = true;
+					if (response.status == 400)
+						text = jQuery.parseJSON(response.responseText)["original_exception"];
+					else
+						text = "I'm sorry. I did not get that.";
+					document.getElementById("output").value = text;
+				});
+
+			};
+			recognition.onerror = function (e) {
+				recognition.stop();
+				console.log("Recognition had an error");
+			}
+		}
+	}
+
+	function btnClick() {
+			synth.cancel();
+			var utterThis = new SpeechSynthesisUtterance(document.getElementById("output").value);
+			utterThis.voice = synth.getVoices()[0];
+			utterThis.pitch = 1.0;
+			utterThis.rate = 0.8;
+			utterThis.onerror = function(e) { console.log("Something went wrong with utterance."); };
+			synth.speak(utterThis);
+	}
+</script>
+
+
+</body>
+</html>
